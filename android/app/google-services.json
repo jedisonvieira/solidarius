@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "680823459369",
+    "project_id": "solidarius-9f589",
+    "storage_bucket": "solidarius-9f589.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:680823459369:android:d0982358907fa6e69a1638",
+        "android_client_info": {
+          "package_name": "com.example.solidarius"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "680823459369-nvjbvdtp7t40hisjkmv2u231o1gul251.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.solidarius",
+            "certificate_hash": "8597910473a009d935594bf5d61ac61adfeda240"
+          }
+        },
+        {
+          "client_id": "680823459369-2tbubh1jhci49s6bu79e3pbj4infiesu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2OEtIxMgcwj_clb-Rr-NceCoqb8InYHE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "680823459369-2tbubh1jhci49s6bu79e3pbj4infiesu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
