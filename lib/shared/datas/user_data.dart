@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
-class UserModel {
+class UserData {
   String? id;
   late String name;
   late String email;
@@ -9,19 +8,19 @@ class UserModel {
   late String age;
   late String picture;
 
-  UserModel(
+  UserData(
       {id,
       required this.name,
       required this.email,
       required this.phone,
       required this.age,
       required this.picture}) {
-    if (!id == null) {
+    if (id != null) {
       this.id = id;
     }
   }
 
-  UserModel.fromDocument(DocumentSnapshot snapshot) {
+  UserData.fromDocument(DocumentSnapshot snapshot) {
     id = snapshot.id;
     name = snapshot["name"];
     email = snapshot["email"];
@@ -30,7 +29,7 @@ class UserModel {
     picture = snapshot["picture"];
   }
 
-  Map<String, dynamic> toMap(UserModel user) {
+  Map<String, dynamic> toMap(UserData user) {
     return {
       "name": user.name,
       "email": user.email,

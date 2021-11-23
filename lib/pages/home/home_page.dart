@@ -22,7 +22,16 @@ class _HomePageState extends State<HomePage> {
           ),
           SliverList(
               delegate: SliverChildBuilderDelegate(
-                  (context, index) => ListTile(title: Text('Item $index')),
+                  (context, index) => ListTile(
+                        leading: const CircleAvatar(
+                          child: ClipOval(
+                            child: Icon(Icons.person),
+                          ),
+                        ),
+                        title: Text("Item $index"),
+                        subtitle: const Text("Items subtittle"),
+                        trailing: const Text("Trailing"),
+                      ),
                   childCount: 20))
         ],
       ),

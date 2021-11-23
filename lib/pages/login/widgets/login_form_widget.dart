@@ -1,9 +1,12 @@
+import 'package:solidarius/shared/models/user_model.dart';
+import 'package:solidarius/pages/home/home_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:solidarius/pages/home/home_page.dart';
 
 class LoginFormWidget extends StatefulWidget {
-  const LoginFormWidget({Key? key}) : super(key: key);
+  final UserModel model;
+
+  const LoginFormWidget(this.model, {Key? key}) : super(key: key);
 
   @override
   _LoginFormWidgetState createState() => _LoginFormWidgetState();
@@ -62,10 +65,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                   child: ElevatedButton(
                 child: const Text("Entrar"),
                 style: ElevatedButton.styleFrom(primary: Colors.blue),
-                onPressed: () => {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const HomePage()))
-                },
+                onPressed: () => {widget.model.signIn()},
               ))
             ],
           ),

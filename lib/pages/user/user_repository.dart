@@ -1,11 +1,10 @@
-import 'package:solidarius/shared/modules/user_module.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:flutter/material.dart';
 
 class UserRepository extends Model {
-  UserModel? user;
+  /*UserModel? user;
   User? firebaseUser;
   bool isLoading = false;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -81,5 +80,5 @@ class UserRepository extends Model {
 
   bool isUserLogged() {
     return firebaseUser != null;
-  }
+  }*/
 }
