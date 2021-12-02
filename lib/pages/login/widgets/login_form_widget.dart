@@ -16,7 +16,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
   bool _obscureText = true;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void setState(VoidCallback fn) {

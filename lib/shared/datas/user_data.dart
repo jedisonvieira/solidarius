@@ -2,19 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserData {
   String? id;
-  late String name;
-  late String email;
-  late String phone;
-  late String age;
-  late String picture;
+  late String? name;
+  late String? email;
+  late String? phone;
+  late String? age;
+  late String? avatar;
 
-  UserData(
-      {id,
-      required this.name,
-      required this.email,
-      required this.phone,
-      required this.age,
-      required this.picture}) {
+  UserData({id, this.name, this.email, this.phone, this.age, this.avatar}) {
     if (id != null) {
       this.id = id;
     }
@@ -26,7 +20,7 @@ class UserData {
     email = snapshot["email"];
     phone = snapshot["phone"];
     age = snapshot["age"];
-    picture = snapshot["picture"];
+    avatar = snapshot["avatar"];
   }
 
   Map<String, dynamic> toMap(UserData user) {
@@ -35,7 +29,7 @@ class UserData {
       "email": user.email,
       "phone": user.phone,
       "age": user.age,
-      "picture": user.picture
+      "avatar": user.avatar
     };
   }
 }

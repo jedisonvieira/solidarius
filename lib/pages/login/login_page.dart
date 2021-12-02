@@ -23,19 +23,17 @@ class _LoginPageState extends State<LoginPage> {
           );
         } else {
           return SingleChildScrollView(
-            child: Center(
-              child: Column(
-                children: [
-                  const SizedBox(
-                    width: 350,
-                    height: 200,
-                    child: Image(
-                      image: AssetImage("assets/images/solidarius_front.jpg"),
-                    ),
+            child: Column(
+              children: [
+                const SizedBox(
+                  width: 350,
+                  height: 200,
+                  child: Image(
+                    image: AssetImage("assets/images/solidarius_front.jpg"),
                   ),
-                  LoginFormWidget(model)
-                ],
-              ),
+                ),
+                LoginFormWidget(model)
+              ],
             ),
           );
         }
