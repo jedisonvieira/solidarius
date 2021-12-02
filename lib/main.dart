@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
             primaryColor: Colors.blue,
             backgroundColor: const Color.fromRGBO(143, 229, 230, 1),
           ),
-          home: LoginPage(),
+          home: const LoginPage(),
         ));
   }
 }
