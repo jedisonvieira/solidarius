@@ -60,7 +60,7 @@ class UserModel extends Model {
         .then((loggedUser) async {
       firebaseUser = loggedUser.user;
 
-      await _loadCurrentUser();
+      await loadCurrentUser();
 
       onSuccess();
       isLoading = false;
@@ -72,15 +72,20 @@ class UserModel extends Model {
     });
   }
 
-  Future<void> _loadCurrentUser() async {
-    User currentUser = await _auth.currentUser!;
-
-    if (currentUser != null) {
-      firebaseUser = currentUser;
-      notifyListeners();
+  Future<void> loadCurrentUser() async {
+    if (firebaseUser == null) {
+      firebaseUser = _auth.currentUser!;
     } else {
-      notifyListeners();
+      if (userData!["name"] == null) {
+        DocumentSnapshot userSnapShot = await FirebaseFirestore.instance
+            .collection("users")
+            .doc(firebaseUser!.uid)
+            .get();
+        userData = userSnapShot.data() as Map<String, dynamic>?;
+      }
     }
+
+    notifyListeners();
   }
 
   Future<void> logOut() async {

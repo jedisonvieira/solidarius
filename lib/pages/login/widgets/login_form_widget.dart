@@ -1,6 +1,6 @@
-import 'package:solidarius/pages/home/home_page.dart';
 import 'package:solidarius/pages/signup/signup_page.dart';
 import 'package:solidarius/shared/models/user_model.dart';
+import 'package:solidarius/pages/home/home_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -82,15 +82,16 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         widget.model.singIn(
+                            onFail: () {},
                             email: _emailController.text,
                             password: _passwordController.text,
                             onSuccess: () {
                               Future.delayed(Duration.zero, () {
                                 Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => const HomePage()));
+                                    builder: (context) =>
+                                        HomePage(widget.model)));
                               });
-                            },
-                            onFail: () {});
+                            });
                       }
                     },
                   ))

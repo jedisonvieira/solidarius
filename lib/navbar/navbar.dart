@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:solidarius/pages/login/login_page.dart';
+import 'package:solidarius/shared/models/user_model.dart';
 
-class NavBar extends StatelessWidget {
-  const NavBar({Key? key}) : super(key: key);
+class NavBar extends StatefulWidget {
+  final UserModel model;
 
+  const NavBar(this.model, {Key? key}) : super(key: key);
+
+  @override
+  State<NavBar> createState() => _NavBarState();
+}
+
+class _NavBarState extends State<NavBar> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -11,19 +19,35 @@ class NavBar extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: [
           Builder(builder: (context) {
-            return const UserAccountsDrawerHeader(
-              accountName: Text("name"),
-              accountEmail: Text("email"),
-              currentAccountPicture: CircleAvatar(
-                child: ClipOval(
-                  child: Icon(Icons.person),
-                ),
+            return UserAccountsDrawerHeader(
+              accountName: Text(
+                widget.model.userData!["name"],
+                style: const TextStyle(
+                    color: Colors.black, fontWeight: FontWeight.bold),
               ),
-              decoration: BoxDecoration(
+              accountEmail: Text(
+                widget.model.userData!["email"],
+                style: const TextStyle(color: Colors.black),
+              ),
+              currentAccountPicture: widget.model.userData!["avatar"] != null
+                  ? CircleAvatar(
+                      backgroundColor: Theme.of(context).backgroundColor,
+                      child: ClipOval(
+                        child: Image(
+                          fit: BoxFit.fitHeight,
+                          image: AssetImage(widget.model.userData!["avatar"]),
+                        ),
+                      ),
+                    )
+                  : const CircleAvatar(
+                      child: ClipOval(
+                        child: Icon(Icons.person),
+                      ),
+                    ),
+              decoration: const BoxDecoration(
                   color: Colors.blue,
                   image: DecorationImage(
-                      image: NetworkImage(
-                          "https://cdn.vox-cdn.com/thumbor/RXhNQI2TTT_eMhhGxky5bf5ZQIE=/0x0:1754x1241/920x613/filters:focal(737x481:1017x761):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/68040475/GettyImages_1060748862.0.jpg"),
+                      image: AssetImage("assets/images/drawer.jpg"),
                       fit: BoxFit.cover)),
             );
           }),
@@ -56,9 +80,10 @@ class NavBar extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text("Sair"),
-            onTap: () => {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => LoginPage()))
+            onTap: () async {
+              await widget.model.logOut();
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const LoginPage()));
             },
           )
         ],
