@@ -1,7 +1,7 @@
-import 'package:scoped_model/scoped_model.dart';
 import 'package:solidarius/shared/models/user_model.dart';
 import 'package:solidarius/pages/login/login_page.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:scoped_model/scoped_model.dart';
 import 'package:flutter/material.dart';
 
 Future<void> main() async {
@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           title: 'Solidarius',
           theme: ThemeData(
-            primaryColor: Colors.blue,
+            primaryColor: Colors.black,
             backgroundColor: const Color.fromRGBO(143, 229, 230, 1),
           ),
           home: const LoginPage(),
