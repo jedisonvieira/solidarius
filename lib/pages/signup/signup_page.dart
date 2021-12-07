@@ -1,3 +1,4 @@
+import 'package:solidarius/pages/login/login_page.dart';
 import 'package:solidarius/shared/models/user_model.dart';
 import 'package:solidarius/shared/datas/user_data.dart';
 import 'package:flutter/material.dart';
@@ -13,13 +14,21 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
+  bool _obscureText = true;
+  bool _obscureTextConfirm = true;
   UserData _editedUser = new UserData();
   final _ageController = TextEditingController();
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPassController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  void setState(VoidCallback fn) {
+    super.setState(fn);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,14 +118,56 @@ class _SignupPageState extends State<SignupPage> {
                     ],
                   ),
                   TextFormField(
+                      obscureText: _obscureText,
                       controller: _passwordController,
                       keyboardType: TextInputType.visiblePassword,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: "Senha",
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureText
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Colors.blue,
+                          ),
+                          onPressed: () => {
+                            setState(() {
+                              _obscureText = !_obscureText;
+                            })
+                          },
+                        ),
                       ),
                       validator: (senha) {
-                        if (senha!.isEmpty) return "Senha inválida";
+                        if (senha!.isEmpty ||
+                            senha != _confirmPassController.text) {
+                          return "Senha inválida";
+                        }
                       }),
+                  TextFormField(
+                    obscureText: _obscureTextConfirm,
+                    controller: _confirmPassController,
+                    keyboardType: TextInputType.visiblePassword,
+                    decoration: InputDecoration(
+                      labelText: "Confirmar senha",
+                      suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureTextConfirm
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Colors.blue,
+                          ),
+                          onPressed: () => {
+                                setState(() {
+                                  _obscureTextConfirm = !_obscureTextConfirm;
+                                })
+                              }),
+                    ),
+                    validator: (senha) {
+                      if (senha!.isEmpty || senha != _passwordController.text) {
+                        return "Senha inválida";
+                      }
+                    },
+                  ),
                   const SizedBox(
                     height: 20,
                   ),
@@ -132,6 +183,29 @@ class _SignupPageState extends State<SignupPage> {
                             _editedUser.name = _nameController.text;
                             _editedUser.phone = _phoneController.text;
                             _editedUser.email = _emailController.text;
+                            widget.model.signUp(
+                                userData: _editedUser.toMap(_editedUser),
+                                pass: _passwordController.text,
+                                onSuccess: () {
+                                  widget.model.singIn(
+                                      email: _editedUser.email!,
+                                      password: _passwordController.text,
+                                      onSuccess: () => {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const LoginPage()))
+                                          },
+                                      onFail: () => {});
+                                },
+                                onFail: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          duration: Duration(seconds: 3),
+                                          backgroundColor: Colors.redAccent,
+                                          content: Text(
+                                              "Erro ao cadastrar usuário")));
+                                });
                           }
                         },
                       ))

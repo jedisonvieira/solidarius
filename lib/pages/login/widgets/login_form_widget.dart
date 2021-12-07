@@ -1,3 +1,4 @@
+import 'package:solidarius/pages/home/home_page.dart';
 import 'package:solidarius/pages/signup/signup_page.dart';
 import 'package:solidarius/shared/models/user_model.dart';
 import 'package:flutter/foundation.dart';
@@ -80,7 +81,16 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                     style: ElevatedButton.styleFrom(primary: Colors.blue),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        widget.model.signIn();
+                        widget.model.singIn(
+                            email: _emailController.text,
+                            password: _passwordController.text,
+                            onSuccess: () {
+                              Future.delayed(Duration.zero, () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => const HomePage()));
+                              });
+                            },
+                            onFail: () {});
                       }
                     },
                   ))

@@ -1,3 +1,4 @@
+import 'package:solidarius/pages/home/home_page.dart';
 import 'package:solidarius/pages/login/widgets/login_form_widget.dart';
 import 'package:solidarius/shared/models/user_model.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -17,6 +18,19 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: Theme.of(context).backgroundColor,
       body: ScopedModelDescendant<UserModel>(
           builder: (BuildContext context, child, model) {
+        if (model.isUserLogged()) {
+          Future.delayed(Duration.zero, () {
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const HomePage()),
+                (r) => false);
+          });
+        } else if (model.isLoading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
         if (model.isLoading) {
           return const Center(
             child: CircularProgressIndicator(),

@@ -9,6 +9,10 @@ class UserModel extends Model {
   Map<String, dynamic>? userData = {};
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  bool isUserLogged() {
+    return firebaseUser != null;
+  }
+
   void signUp(
       {required Map<String, dynamic> userData,
       required String pass,
@@ -43,13 +47,45 @@ class UserModel extends Model {
         .set(userData);
   }
 
-  void signIn() async {
+  void singIn(
+      {required String email,
+      required String password,
+      required VoidCallback onSuccess,
+      required VoidCallback onFail}) {
     isLoading = true;
     notifyListeners();
 
-    await Future.delayed(const Duration(seconds: 3));
+    _auth
+        .signInWithEmailAndPassword(email: email, password: password)
+        .then((loggedUser) async {
+      firebaseUser = loggedUser.user;
 
-    isLoading = false;
+      await _loadCurrentUser();
+
+      onSuccess();
+      isLoading = false;
+      notifyListeners();
+    }).catchError((error) {
+      onFail();
+      isLoading = false;
+      notifyListeners();
+    });
+  }
+
+  Future<void> _loadCurrentUser() async {
+    User currentUser = await _auth.currentUser!;
+
+    if (currentUser != null) {
+      firebaseUser = currentUser;
+      notifyListeners();
+    } else {
+      notifyListeners();
+    }
+  }
+
+  Future<void> logOut() async {
+    await _auth.signOut();
+    firebaseUser = null;
     notifyListeners();
   }
 
