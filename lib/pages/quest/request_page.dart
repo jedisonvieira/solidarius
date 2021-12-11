@@ -12,6 +12,7 @@ class RequestPage extends StatefulWidget {
 
 class _RequestPageState extends State<RequestPage> {
   int _currentStep = 0;
+  bool _isRequestFormValid = false;
 
   final GlobalKey<FormState> _requestDataFormkey = GlobalKey<FormState>();
   final GlobalKey<FormState> _personalDataFormKey = GlobalKey<FormState>();
@@ -33,13 +34,24 @@ class _RequestPageState extends State<RequestPage> {
         ),
         backgroundColor: Theme.of(context).backgroundColor,
       ),
+      floatingActionButton: Visibility(
+        visible: _isRequestFormValid,
+        child: FloatingActionButton(
+          onPressed: _checkButtonPress,
+          child: Icon(
+            Icons.check,
+            color: Theme.of(context).primaryColor,
+          ),
+          backgroundColor: Theme.of(context).backgroundColor,
+        ),
+      ),
       body: SingleChildScrollView(
         child: Theme(
           data: ThemeData(
               colorScheme:
                   ColorScheme.light(primary: Theme.of(context).primaryColor)),
           child: Stepper(
-              onStepTapped: tapped,
+              onStepTapped: _tapped,
               currentStep: _currentStep,
               steps: [
                 Step(
@@ -85,44 +97,28 @@ class _RequestPageState extends State<RequestPage> {
                       child: Column(
                         children: [
                           TextFormField(
+                            onChanged: _validateRequestForm,
                             maxLines: 10,
                             controller: _descriptionController,
                             keyboardType: TextInputType.multiline,
                             decoration: const InputDecoration(
                                 labelText: "Descrição completa",
                                 border: OutlineInputBorder()),
-                          )
+                            validator: (description) {
+                              if (description!.trim().isEmpty) {
+                                return "Campo obrigatório";
+                              }
+                            },
+                          ),
                         ],
                       ),
                     ))
               ],
-              onStepContinue: () => continued(),
-              onStepCancel: () => cancel()),
+              onStepContinue: () => _continued(),
+              onStepCancel: () => _cancelled()),
         ),
       ),
     );
-  }
-
-  tapped(int step) {
-    setState(() => _currentStep = step);
-  }
-
-  continued() {
-    if (_currentStep <= 0 && _personalDataFormKey.currentState!.validate()) {
-      setState(() {
-        _currentStep += 1;
-      });
-    } else {
-      print("ultimo stepper");
-    }
-  }
-
-  cancel() {
-    if (_currentStep > 0) {
-      setState(() {
-        _currentStep -= 1;
-      });
-    }
   }
 
   TextFormField _formFieldFactory(
@@ -131,10 +127,48 @@ class _RequestPageState extends State<RequestPage> {
       controller: controller,
       decoration: InputDecoration(labelText: label),
       validator: (field) {
-        if (isMandatory && field!.isEmpty) {
+        if (isMandatory && field!.trim().isEmpty) {
           return "Campo obrigatório";
         }
       },
     );
+  }
+
+  void _tapped(int step) {
+    setState(() => _currentStep = step);
+  }
+
+  void _validateRequestForm(String? value) {
+    if (_requestDataFormkey.currentState!.validate()) {
+      setState(() {
+        _isRequestFormValid = true;
+      });
+    } else {
+      setState(() {
+        _isRequestFormValid = false;
+      });
+    }
+  }
+
+  void _continued() {
+    if (_currentStep <= 0 && _personalDataFormKey.currentState!.validate()) {
+      setState(() {
+        _currentStep += 1;
+      });
+    } else {
+      _validateRequestForm("value");
+    }
+  }
+
+  void _cancelled() {
+    if (_currentStep > 0) {
+      setState(() {
+        _currentStep -= 1;
+      });
+    }
+  }
+
+  void _checkButtonPress() {
+    //print("check button");
   }
 }
