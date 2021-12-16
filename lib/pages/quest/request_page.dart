@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:solidarius/pages/home/home_page.dart';
+import 'package:solidarius/shared/datas/request_data.dart';
 import 'package:solidarius/shared/models/user_model.dart';
+import 'package:solidarius/shared/repositories/request_repository.dart';
+import 'package:solidarius/shared/util/constants.dart';
 
 class RequestPage extends StatefulWidget {
   final UserModel model;
@@ -13,6 +17,7 @@ class RequestPage extends StatefulWidget {
 class _RequestPageState extends State<RequestPage> {
   int _currentStep = 0;
   bool _isRequestFormValid = false;
+  RequestData _editedRequest = new RequestData();
 
   final GlobalKey<FormState> _requestDataFormkey = GlobalKey<FormState>();
   final GlobalKey<FormState> _personalDataFormKey = GlobalKey<FormState>();
@@ -169,6 +174,20 @@ class _RequestPageState extends State<RequestPage> {
   }
 
   void _checkButtonPress() {
-    //print("check button");
+    if (_editedRequest.id == null) {
+      _editedRequest.creator = widget.model.firebaseUser!.uid;
+    }
+
+    _editedRequest.pix = _pixController.text;
+    _editedRequest.city = _cityController.text;
+    _editedRequest.status = Constants.idStatusOpen;
+    _editedRequest.address = _addressController.text;
+    _editedRequest.requester = _requesterController.text;
+    _editedRequest.description = _descriptionController.text;
+
+    RequestReposiroty()
+        .saveRequest(requestData: RequestData().toMap(_editedRequest))
+        .then((value) => Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => const HomePage())));
   }
 }

@@ -27,11 +27,11 @@ class MyApp extends StatelessWidget {
           ],
           supportedLocales: const [Locale('pt', '')],
           theme: ThemeData(
-              primaryColor: Colors.black,
-              colorScheme:
-                  ThemeData().colorScheme.copyWith(primary: Colors.black),
-              backgroundColor: const Color.fromRGBO(143, 229, 230, 1),
-              buttonTheme: const ButtonThemeData(buttonColor: Colors.amber)),
+            primaryColor: Colors.black,
+            colorScheme:
+                ThemeData().colorScheme.copyWith(primary: Colors.black),
+            backgroundColor: const Color.fromRGBO(143, 229, 230, 1),
+          ),
           home: const HomePage(),
         ));
   }

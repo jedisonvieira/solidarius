@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:solidarius/shared/datas/user_data.dart';
 
 class RequestData {
   String? id;
@@ -7,7 +6,7 @@ class RequestData {
   late String? city;
   late String? status;
   late String? address;
-  late UserData? creator;
+  late String? creator;
   late String? requester;
   late String? description;
 
