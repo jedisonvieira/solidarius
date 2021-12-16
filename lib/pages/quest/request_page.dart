@@ -1,193 +1,119 @@
-import 'package:flutter/material.dart';
-import 'package:solidarius/pages/home/home_page.dart';
-import 'package:solidarius/shared/datas/request_data.dart';
+import 'package:solidarius/pages/quest/widgets/request_form_page.dart';
 import 'package:solidarius/shared/models/user_model.dart';
-import 'package:solidarius/shared/repositories/request_repository.dart';
-import 'package:solidarius/shared/util/constants.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:scoped_model/scoped_model.dart';
+import 'package:solidarius/navbar/navbar.dart';
+import 'package:flutter/material.dart';
 
 class RequestPage extends StatefulWidget {
-  final UserModel model;
-
-  const RequestPage(this.model, {Key? key}) : super(key: key);
+  const RequestPage({Key? key}) : super(key: key);
 
   @override
   _RequestPageState createState() => _RequestPageState();
 }
 
 class _RequestPageState extends State<RequestPage> {
-  int _currentStep = 0;
-  bool _isRequestFormValid = false;
-  RequestData _editedRequest = new RequestData();
-
-  final GlobalKey<FormState> _requestDataFormkey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _personalDataFormKey = GlobalKey<FormState>();
-
-  final TextEditingController _pixController = TextEditingController();
-  final TextEditingController _cityController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _requesterController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        iconTheme: IconThemeData(color: Theme.of(context).primaryColor),
-        title: Text(
-          "Pedido de auxílio",
-          style: TextStyle(color: Theme.of(context).primaryColor),
-        ),
-        backgroundColor: Theme.of(context).backgroundColor,
-      ),
-      floatingActionButton: Visibility(
-        visible: _isRequestFormValid,
-        child: FloatingActionButton(
-          onPressed: _checkButtonPress,
-          child: Icon(
-            Icons.check,
-            color: Theme.of(context).primaryColor,
-          ),
-          backgroundColor: Theme.of(context).backgroundColor,
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Theme(
-          data: ThemeData(
-              colorScheme:
-                  ColorScheme.light(primary: Theme.of(context).primaryColor)),
-          child: Stepper(
-              onStepTapped: _tapped,
-              currentStep: _currentStep,
-              steps: [
-                Step(
-                    isActive: _currentStep >= 0,
-                    state: _currentStep >= 0
-                        ? StepState.complete
-                        : StepState.disabled,
-                    title: const Text("Dados pessoais"),
-                    content: Form(
-                        key: _personalDataFormKey,
-                        child: Column(
-                          children: [
-                            _formFieldFactory(
-                              label: "Nome do auxiliado",
-                              isMandatory: true,
-                              controller: _requesterController,
+    return WillPopScope(
+        onWillPop: () async => false,
+        child: ScopedModelDescendant<UserModel>(
+          builder: (BuildContext context, child, model) {
+            return Scaffold(
+                floatingActionButton: FloatingActionButton(
+                  child: Icon(
+                    Icons.add,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  backgroundColor: Theme.of(context).backgroundColor,
+                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => RequestFormPage(model))),
+                ),
+                drawer: NavBar(model),
+                drawerScrimColor: const Color.fromRGBO(0, 0, 0, 0.7),
+                body: StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection("requests")
+                      .snapshots(),
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    if (snapshot.hasData) {
+                      return CustomScrollView(
+                        slivers: [
+                          SliverAppBar(
+                            floating: true,
+                            iconTheme: IconThemeData(
+                                color: Theme.of(context).primaryColor),
+                            title: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                "Solidarius",
+                                style: TextStyle(
+                                    color: Theme.of(context).primaryColor),
+                              ),
                             ),
-                            _formFieldFactory(
-                              label: "Endereço",
-                              isMandatory: true,
-                              controller: _addressController,
-                            ),
-                            _formFieldFactory(
-                              label: "Cidade",
-                              isMandatory: true,
-                              controller: _cityController,
-                            ),
-                            _formFieldFactory(
-                              label: "Pix",
-                              isMandatory: false,
-                              controller: _pixController,
-                            )
-                          ],
-                        ))),
-                Step(
-                    isActive: _currentStep >= 1,
-                    state: _currentStep >= 1
-                        ? StepState.complete
-                        : StepState.disabled,
-                    title: const Text("Descrição do auxilio"),
-                    content: Form(
-                      key: _requestDataFormkey,
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            onChanged: _validateRequestForm,
-                            maxLines: 10,
-                            controller: _descriptionController,
-                            keyboardType: TextInputType.multiline,
-                            decoration: const InputDecoration(
-                                labelText: "Descrição completa",
-                                border: OutlineInputBorder()),
-                            validator: (description) {
-                              if (description!.trim().isEmpty) {
-                                return "Campo obrigatório";
-                              }
-                            },
+                            backgroundColor:
+                                const Color.fromRGBO(143, 229, 230, 1),
                           ),
+                          SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                  (context, index) => Card(
+                                        child: ListTile(
+                                          leading: CircleAvatar(
+                                            backgroundColor: Theme.of(context)
+                                                .backgroundColor,
+                                            child: ClipOval(
+                                              child: Icon(
+                                                Icons.person,
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                              ),
+                                            ),
+                                          ),
+                                          title: Text(snapshot.data.docs[index]
+                                              ["requester"]),
+                                          subtitle: Text(
+                                            snapshot.data.docs[index]
+                                                ["description"],
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          trailing: const Icon(Icons.edit),
+                                          onTap: () => _openRequestDetails(),
+                                        ),
+                                      ),
+                                  childCount: snapshot.data.docs.length))
                         ],
-                      ),
-                    ))
-              ],
-              onStepContinue: () => _continued(),
-              onStepCancel: () => _cancelled()),
-        ),
-      ),
-    );
+                      );
+                    } else {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  },
+                ));
+          },
+        ));
   }
 
-  TextFormField _formFieldFactory(
-      {required controller, required label, required bool isMandatory}) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(labelText: label),
-      validator: (field) {
-        if (isMandatory && field!.trim().isEmpty) {
-          return "Campo obrigatório";
-        }
+  void _openRequestDetails() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Center(
+            child: Text(
+              'Detalhes do auxilio',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          content: GestureDetector(
+            child: const SizedBox(
+              height: 250,
+              width: 250,
+            ),
+            onTap: () => Navigator.pop(context),
+          ),
+        );
       },
     );
-  }
-
-  void _tapped(int step) {
-    setState(() => _currentStep = step);
-  }
-
-  void _validateRequestForm(String? value) {
-    if (_requestDataFormkey.currentState!.validate()) {
-      setState(() {
-        _isRequestFormValid = true;
-      });
-    } else {
-      setState(() {
-        _isRequestFormValid = false;
-      });
-    }
-  }
-
-  void _continued() {
-    if (_currentStep <= 0 && _personalDataFormKey.currentState!.validate()) {
-      setState(() {
-        _currentStep += 1;
-      });
-    } else {
-      _validateRequestForm("value");
-    }
-  }
-
-  void _cancelled() {
-    if (_currentStep > 0) {
-      setState(() {
-        _currentStep -= 1;
-      });
-    }
-  }
-
-  void _checkButtonPress() {
-    if (_editedRequest.id == null) {
-      _editedRequest.creator = widget.model.firebaseUser!.uid;
-    }
-
-    _editedRequest.pix = _pixController.text;
-    _editedRequest.city = _cityController.text;
-    _editedRequest.status = Constants.idStatusOpen;
-    _editedRequest.address = _addressController.text;
-    _editedRequest.requester = _requesterController.text;
-    _editedRequest.description = _descriptionController.text;
-
-    RequestReposiroty()
-        .saveRequest(requestData: RequestData().toMap(_editedRequest))
-        .then((value) => Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => const HomePage())));
   }
 }

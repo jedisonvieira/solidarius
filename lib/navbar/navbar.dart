@@ -1,4 +1,4 @@
-import 'package:solidarius/pages/home/home_page.dart';
+import 'package:solidarius/pages/quest/request_page.dart';
 import 'package:solidarius/pages/profile/profile_page.dart';
 import 'package:solidarius/shared/models/user_model.dart';
 import 'package:solidarius/pages/login/login_page.dart';
@@ -90,7 +90,7 @@ class _NavBarState extends State<NavBar> {
             title: const Text("Pedidos de auxílio"),
             onTap: () => {
               Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const HomePage()))
+                  MaterialPageRoute(builder: (context) => const RequestPage()))
             },
           ),
           const Divider(),

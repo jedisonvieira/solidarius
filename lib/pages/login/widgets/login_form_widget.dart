@@ -1,6 +1,6 @@
 import 'package:solidarius/pages/signup/signup_page.dart';
 import 'package:solidarius/shared/models/user_model.dart';
-import 'package:solidarius/pages/home/home_page.dart';
+import 'package:solidarius/pages/quest/request_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -87,7 +87,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                             onSuccess: () {
                               Future.delayed(Duration.zero, () {
                                 Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => const HomePage()));
+                                    builder: (context) => const RequestPage()));
                               });
                             });
                       }

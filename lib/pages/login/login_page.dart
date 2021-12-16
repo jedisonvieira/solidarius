@@ -1,6 +1,6 @@
 import 'package:solidarius/pages/login/widgets/login_form_widget.dart';
 import 'package:solidarius/shared/models/user_model.dart';
-import 'package:solidarius/pages/home/home_page.dart';
+import 'package:solidarius/pages/quest/request_page.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +22,7 @@ class _LoginPageState extends State<LoginPage> {
           Future.delayed(Duration.zero, () {
             Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => const HomePage()),
+                MaterialPageRoute(builder: (context) => const RequestPage()),
                 (r) => false);
           });
         } else if (model.isLoading) {

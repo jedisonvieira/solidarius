@@ -1,6 +1,6 @@
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:solidarius/shared/models/user_model.dart';
-import 'package:solidarius/pages/home/home_page.dart';
+import 'package:solidarius/pages/quest/request_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
                 ThemeData().colorScheme.copyWith(primary: Colors.black),
             backgroundColor: const Color.fromRGBO(143, 229, 230, 1),
           ),
-          home: const HomePage(),
+          home: const RequestPage(),
         ));
   }
 }
