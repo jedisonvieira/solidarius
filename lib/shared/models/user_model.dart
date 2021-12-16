@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:flutter/material.dart';
+import 'package:solidarius/shared/datas/user_data.dart';
 
 class UserModel extends Model {
   User? firebaseUser;
@@ -55,6 +56,13 @@ class UserModel extends Model {
         .set(userData);
   }
 
+  Future<void> updateUser(Map<String, dynamic> userData) async {
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(firebaseUser!.uid)
+        .update(userData);
+  }
+
   void singIn(
       {required String email,
       required String password,
@@ -100,6 +108,13 @@ class UserModel extends Model {
     await _auth.signOut();
     firebaseUser = null;
     notifyListeners();
+  }
+
+  Future<String?> getUserAvatar(String? id) async {
+    DocumentSnapshot userSnapshot =
+        await FirebaseFirestore.instance.collection("users").doc(id).get();
+
+    return UserData.fromDocument(userSnapshot).avatar;
   }
 
   void recoverPass() {}

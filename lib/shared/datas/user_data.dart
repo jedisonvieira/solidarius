@@ -14,6 +14,14 @@ class UserData {
     }
   }
 
+  UserData.fromMap(Map<String, dynamic>? map) {
+    name = map!["name"];
+    email = map["email"];
+    phone = map["phone"];
+    age = map["age"];
+    avatar = map["avatar"];
+  }
+
   UserData.fromDocument(DocumentSnapshot snapshot) {
     id = snapshot.id;
     name = snapshot["name"];

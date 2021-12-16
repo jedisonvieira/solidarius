@@ -16,7 +16,7 @@ class SignupPage extends StatefulWidget {
 class _SignupPageState extends State<SignupPage> {
   bool _obscureText = true;
   bool _obscureTextConfirm = true;
-  UserData _editedUser = UserData();
+  UserData _user = UserData();
   final _ageController = TextEditingController();
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -26,14 +26,8 @@ class _SignupPageState extends State<SignupPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
-  void setState(VoidCallback fn) {
-    super.setState(fn);
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
       body: SingleChildScrollView(
         child: Padding(
             padding: const EdgeInsets.all(40),
@@ -46,19 +40,25 @@ class _SignupPageState extends State<SignupPage> {
                     height: 150,
                     width: 150,
                     child: GestureDetector(
-                      child: _editedUser.avatar == null
-                          ? const CircleAvatar(
-                              backgroundColor: Colors.blue,
+                      child: _user.avatar == null
+                          ? CircleAvatar(
+                              backgroundColor:
+                                  Theme.of(context).backgroundColor,
                               child: ClipOval(
-                                child: Icon(Icons.person, size: 150),
+                                child: Icon(
+                                  Icons.person,
+                                  size: 150,
+                                  color: Theme.of(context).primaryColor,
+                                ),
                               ),
                             )
                           : CircleAvatar(
-                              backgroundColor: Colors.blue,
+                              backgroundColor:
+                                  Theme.of(context).backgroundColor,
                               child: ClipOval(
                                 child: Image(
                                   fit: BoxFit.fitHeight,
-                                  image: AssetImage(_editedUser.avatar!),
+                                  image: AssetImage(_user.avatar!),
                                 ),
                               ),
                             ),
@@ -76,44 +76,29 @@ class _SignupPageState extends State<SignupPage> {
                           return "E-mail inválido";
                         }
                       }),
-                  TextFormField(
+                  _formFieldFactory(
                       controller: _nameController,
-                      keyboardType: TextInputType.name,
-                      decoration:
-                          const InputDecoration(labelText: "Nome completo"),
-                      validator: (email) {
-                        if (email!.isEmpty) {
-                          return "nome inválido";
-                        }
-                      }),
+                      label: "Nome completo",
+                      keyboard: TextInputType.name,
+                      isMandatory: true),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Flexible(
                           flex: 1,
-                          child: TextFormField(
+                          child: _formFieldFactory(
                               controller: _ageController,
-                              keyboardType: TextInputType.number,
-                              decoration:
-                                  const InputDecoration(labelText: "Idade"),
-                              validator: (email) {
-                                if (email!.isEmpty) {
-                                  return "idade inválida";
-                                }
-                              })),
+                              label: "Idade",
+                              keyboard: TextInputType.number,
+                              isMandatory: true)),
                       const VerticalDivider(),
                       Flexible(
                         flex: 2,
-                        child: TextFormField(
+                        child: _formFieldFactory(
                             controller: _phoneController,
-                            keyboardType: TextInputType.phone,
-                            decoration:
-                                const InputDecoration(labelText: "Telefone"),
-                            validator: (email) {
-                              if (email!.isEmpty) {
-                                return "telefone inválido";
-                              }
-                            }),
+                            label: "Telefone",
+                            keyboard: TextInputType.phone,
+                            isMandatory: true),
                       ),
                     ],
                   ),
@@ -128,7 +113,6 @@ class _SignupPageState extends State<SignupPage> {
                             _obscureText
                                 ? Icons.visibility
                                 : Icons.visibility_off,
-                            color: Colors.blue,
                           ),
                           onPressed: () => {
                             setState(() {
@@ -154,7 +138,6 @@ class _SignupPageState extends State<SignupPage> {
                             _obscureTextConfirm
                                 ? Icons.visibility
                                 : Icons.visibility_off,
-                            color: Colors.blue,
                           ),
                           onPressed: () => {
                                 setState(() {
@@ -176,37 +159,8 @@ class _SignupPageState extends State<SignupPage> {
                       Expanded(
                           child: ElevatedButton(
                         child: const Text("Registrar-se"),
-                        style: ElevatedButton.styleFrom(primary: Colors.blue),
                         onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            _editedUser.age = _ageController.text;
-                            _editedUser.name = _nameController.text;
-                            _editedUser.phone = _phoneController.text;
-                            _editedUser.email = _emailController.text;
-                            widget.model.signUp(
-                                userData: _editedUser.toMap(_editedUser),
-                                pass: _passwordController.text,
-                                onSuccess: () {
-                                  widget.model.singIn(
-                                      email: _editedUser.email!,
-                                      password: _passwordController.text,
-                                      onSuccess: () => {
-                                            Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const LoginPage()))
-                                          },
-                                      onFail: () => {});
-                                },
-                                onFail: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          duration: Duration(seconds: 3),
-                                          backgroundColor: Colors.redAccent,
-                                          content: Text(
-                                              "Erro ao cadastrar usuário")));
-                                });
-                          }
+                          _userSignup(context);
                         },
                       ))
                     ],
@@ -215,6 +169,50 @@ class _SignupPageState extends State<SignupPage> {
               ),
             )),
       ),
+    );
+  }
+
+  void _userSignup(BuildContext context) {
+    if (_formKey.currentState!.validate()) {
+      _user.age = _ageController.text;
+      _user.name = _nameController.text;
+      _user.phone = _phoneController.text;
+      _user.email = _emailController.text;
+      widget.model.signUp(
+          userData: _user.toMap(_user),
+          pass: _passwordController.text,
+          onSuccess: () {
+            widget.model.singIn(
+                email: _user.email!,
+                password: _passwordController.text,
+                onSuccess: () => {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const LoginPage()))
+                    },
+                onFail: () => {});
+          },
+          onFail: () {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                duration: Duration(seconds: 3),
+                backgroundColor: Colors.redAccent,
+                content: Text("Erro ao cadastrar usuário")));
+          });
+    }
+  }
+
+  TextFormField _formFieldFactory(
+      {required controller,
+      required label,
+      required TextInputType keyboard,
+      required bool isMandatory}) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(labelText: label),
+      validator: (field) {
+        if (isMandatory && field!.trim().isEmpty) {
+          return "Campo obrigatório";
+        }
+      },
     );
   }
 
@@ -233,7 +231,7 @@ class _SignupPageState extends State<SignupPage> {
     );
 
     setState(() {
-      _editedUser.avatar = iconPicked;
+      _user.avatar = iconPicked;
     });
   }
 }

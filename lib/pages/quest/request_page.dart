@@ -1,4 +1,6 @@
+import 'package:solidarius/pages/quest/widgets/request_card.dart';
 import 'package:solidarius/pages/quest/widgets/request_form_page.dart';
+import 'package:solidarius/shared/datas/request_data.dart';
 import 'package:solidarius/shared/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -19,6 +21,7 @@ class _RequestPageState extends State<RequestPage> {
         onWillPop: () async => false,
         child: ScopedModelDescendant<UserModel>(
           builder: (BuildContext context, child, model) {
+            model.isUserLogged();
             return Scaffold(
                 floatingActionButton: FloatingActionButton(
                   child: Icon(
@@ -55,32 +58,13 @@ class _RequestPageState extends State<RequestPage> {
                                 const Color.fromRGBO(143, 229, 230, 1),
                           ),
                           SliverList(
-                              delegate: SliverChildBuilderDelegate(
-                                  (context, index) => Card(
-                                        child: ListTile(
-                                          leading: CircleAvatar(
-                                            backgroundColor: Theme.of(context)
-                                                .backgroundColor,
-                                            child: ClipOval(
-                                              child: Icon(
-                                                Icons.person,
-                                                color: Theme.of(context)
-                                                    .primaryColor,
-                                              ),
-                                            ),
-                                          ),
-                                          title: Text(snapshot.data.docs[index]
-                                              ["requester"]),
-                                          subtitle: Text(
-                                            snapshot.data.docs[index]
-                                                ["description"],
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          trailing: const Icon(Icons.edit),
-                                          onTap: () => _openRequestDetails(),
-                                        ),
-                                      ),
-                                  childCount: snapshot.data.docs.length))
+                              delegate:
+                                  SliverChildBuilderDelegate((context, index) {
+                            return RequestCard(
+                                model,
+                                RequestData.fromDocument(
+                                    snapshot.data.docs[index]));
+                          }, childCount: snapshot.data.docs.length))
                         ],
                       );
                     } else {
@@ -92,28 +76,5 @@ class _RequestPageState extends State<RequestPage> {
                 ));
           },
         ));
-  }
-
-  void _openRequestDetails() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Center(
-            child: Text(
-              'Detalhes do auxilio',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-          content: GestureDetector(
-            child: const SizedBox(
-              height: 250,
-              width: 250,
-            ),
-            onTap: () => Navigator.pop(context),
-          ),
-        );
-      },
-    );
   }
 }

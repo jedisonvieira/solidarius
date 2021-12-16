@@ -1,7 +1,8 @@
 import 'package:solidarius/pages/quest/request_page.dart';
-import 'package:solidarius/pages/profile/profile_page.dart';
+import 'package:solidarius/shared/datas/user_data.dart';
 import 'package:solidarius/shared/models/user_model.dart';
 import 'package:solidarius/pages/login/login_page.dart';
+import 'package:solidarius/pages/user/user_page.dart';
 import 'package:flutter/material.dart';
 
 class NavBar extends StatefulWidget {
@@ -76,13 +77,18 @@ class _NavBarState extends State<NavBar> {
             ),
           ),
           const Divider(),
-          ListTile(
-            title: const Text("Meu perfil"),
-            leading: Icon(Icons.person, color: Theme.of(context).primaryColor),
-            onTap: () => {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const ProfilePage()))
-            },
+          Visibility(
+            visible: widget.model.isUserLogged(),
+            child: ListTile(
+              title: const Text("Meu perfil"),
+              leading:
+                  Icon(Icons.person, color: Theme.of(context).primaryColor),
+              onTap: () => {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) =>
+                        UserPage(UserData.fromMap(widget.model.userData))))
+              },
+            ),
           ),
           ListTile(
             leading:

@@ -49,7 +49,6 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscureText ? Icons.visibility : Icons.visibility_off,
-                      color: Theme.of(context).primaryColor,
                     ),
                     onPressed: () => {
                       setState(() {
