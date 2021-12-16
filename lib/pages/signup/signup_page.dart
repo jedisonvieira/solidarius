@@ -16,7 +16,7 @@ class SignupPage extends StatefulWidget {
 class _SignupPageState extends State<SignupPage> {
   bool _obscureText = true;
   bool _obscureTextConfirm = true;
-  UserData _editedUser = new UserData();
+  UserData _editedUser = UserData();
   final _ageController = TextEditingController();
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();

@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:solidarius/pages/login/login_page.dart';
+import 'package:solidarius/pages/home/home_page.dart';
+import 'package:solidarius/pages/profile/profile_page.dart';
 import 'package:solidarius/shared/models/user_model.dart';
+import 'package:solidarius/pages/login/login_page.dart';
+import 'package:flutter/material.dart';
 
 class NavBar extends StatefulWidget {
   final UserModel model;
@@ -21,14 +23,15 @@ class _NavBarState extends State<NavBar> {
           Builder(builder: (context) {
             return UserAccountsDrawerHeader(
               accountName: Text(
-                widget.model.userData!["name"],
+                widget.model.userData!["name"] ?? "",
                 style: const TextStyle(
                     color: Colors.black, fontWeight: FontWeight.bold),
               ),
               accountEmail: Text(
-                widget.model.userData!["email"],
+                widget.model.userData!["email"] ?? "",
                 style: const TextStyle(color: Colors.black),
               ),
+              currentAccountPictureSize: const Size.fromRadius(40),
               currentAccountPicture: widget.model.userData!["avatar"] != null
                   ? CircleAvatar(
                       backgroundColor: Theme.of(context).backgroundColor,
@@ -39,9 +42,13 @@ class _NavBarState extends State<NavBar> {
                         ),
                       ),
                     )
-                  : const CircleAvatar(
+                  : CircleAvatar(
+                      backgroundColor: Theme.of(context).backgroundColor,
                       child: ClipOval(
-                        child: Icon(Icons.person),
+                        child: Icon(
+                          Icons.person,
+                          color: Theme.of(context).primaryColor,
+                        ),
                       ),
                     ),
               decoration: const BoxDecoration(
@@ -51,41 +58,53 @@ class _NavBarState extends State<NavBar> {
                       fit: BoxFit.cover)),
             );
           }),
-          ListTile(
-            leading: const Icon(Icons.ac_unit_rounded),
-            title: const Text("Primeiro menu"),
-            onTap: () => {print("teste")},
-          ),
-          ListTile(
-            leading: const Icon(Icons.ac_unit_rounded),
-            title: const Text("Segundo menu"),
-            onTap: () => {print("teste")},
-          ),
-          ListTile(
-            leading: const Icon(Icons.ac_unit_rounded),
-            title: const Text("Terceiro menu"),
-            onTap: () => {print("teste")},
-          ),
-          ListTile(
-            leading: const Icon(Icons.ac_unit_rounded),
-            title: const Text("Quarto menu"),
-            onTap: () => {print("teste")},
-          ),
-          ListTile(
-            leading: const Icon(Icons.ac_unit_rounded),
-            title: const Text("Quinto menu"),
-            onTap: () => {print("teste")},
+          Visibility(
+            visible: !widget.model.isUserLogged(),
+            child: ListTile(
+              leading: const Icon(
+                Icons.login,
+                color: Colors.blue,
+              ),
+              title: const Text(
+                "Entre ou cadastre-se",
+                style: TextStyle(color: Colors.blue),
+              ),
+              onTap: () => {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const LoginPage()))
+              },
+            ),
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.logout),
-            title: const Text("Sair"),
-            onTap: () async {
-              await widget.model.logOut();
+            title: const Text("Meu perfil"),
+            leading: Icon(Icons.person, color: Theme.of(context).primaryColor),
+            onTap: () => {
               Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const LoginPage()));
+                  MaterialPageRoute(builder: (context) => const ProfilePage()))
             },
-          )
+          ),
+          ListTile(
+            leading:
+                Icon(Icons.emoji_people, color: Theme.of(context).primaryColor),
+            title: const Text("Pedidos de auxílio"),
+            onTap: () => {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const HomePage()))
+            },
+          ),
+          const Divider(),
+          Visibility(
+            visible: widget.model.isUserLogged(),
+            child: ListTile(
+              title: const Text("Sair"),
+              leading:
+                  Icon(Icons.logout, color: Theme.of(context).primaryColor),
+              onTap: () async {
+                await widget.model.logOut();
+              },
+            ),
+          ),
         ],
       ),
     );

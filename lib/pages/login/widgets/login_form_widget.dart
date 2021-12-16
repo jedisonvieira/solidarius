@@ -49,7 +49,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscureText ? Icons.visibility : Icons.visibility_off,
-                      color: Colors.blue,
+                      color: Theme.of(context).primaryColor,
                     ),
                     onPressed: () => {
                       setState(() {
@@ -78,7 +78,6 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                   Expanded(
                       child: ElevatedButton(
                     child: const Text("Entrar"),
-                    style: ElevatedButton.styleFrom(primary: Colors.blue),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         widget.model.singIn(
@@ -88,8 +87,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                             onSuccess: () {
                               Future.delayed(Duration.zero, () {
                                 Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) =>
-                                        HomePage(widget.model)));
+                                    builder: (context) => const HomePage()));
                               });
                             });
                       }
@@ -102,7 +100,6 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                   Expanded(
                       child: ElevatedButton(
                     child: const Text("Criar conta"),
-                    style: ElevatedButton.styleFrom(primary: Colors.blue),
                     onPressed: () => {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => SignupPage(widget.model)))

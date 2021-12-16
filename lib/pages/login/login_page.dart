@@ -22,7 +22,7 @@ class _LoginPageState extends State<LoginPage> {
           Future.delayed(Duration.zero, () {
             Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => HomePage(model)),
+                MaterialPageRoute(builder: (context) => const HomePage()),
                 (r) => false);
           });
         } else if (model.isLoading) {
