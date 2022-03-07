@@ -1,5 +1,5 @@
-import 'package:solidarius/pages/quest/widgets/request_card.dart';
-import 'package:solidarius/pages/quest/widgets/request_form_page.dart';
+import 'package:solidarius/pages/request/widgets/request_form_page.dart';
+import 'package:solidarius/pages/request/widgets/request_card.dart';
 import 'package:solidarius/shared/datas/request_data.dart';
 import 'package:solidarius/shared/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:solidarius/pages/quest/request_page.dart';
+import 'package:solidarius/shared/repositories/request_repository.dart';
 import 'package:solidarius/shared/datas/request_data.dart';
 import 'package:solidarius/shared/models/user_model.dart';
-import 'package:solidarius/shared/repositories/request_repository.dart';
 import 'package:solidarius/shared/util/constants.dart';
+import 'package:flutter/material.dart';
+import '../request_page.dart';
 
 class RequestFormPage extends StatefulWidget {
   final UserModel model;
@@ -70,25 +70,25 @@ class _RequestFormPageState extends State<RequestFormPage> {
                         child: Column(
                           children: [
                             _formFieldFactory(
-                              label: "Nome do auxiliado",
-                              isMandatory: true,
-                              controller: _requesterController,
-                            ),
+                                label: "Título do auxiliado",
+                                isMandatory: true,
+                                keyboard: TextInputType.name,
+                                controller: _requesterController),
                             _formFieldFactory(
-                              label: "Endereço",
-                              isMandatory: true,
-                              controller: _addressController,
-                            ),
+                                label: "Endereço",
+                                isMandatory: true,
+                                keyboard: TextInputType.name,
+                                controller: _addressController),
                             _formFieldFactory(
-                              label: "Cidade",
-                              isMandatory: true,
-                              controller: _cityController,
-                            ),
+                                label: "Cidade",
+                                isMandatory: true,
+                                controller: _cityController,
+                                keyboard: TextInputType.streetAddress),
                             _formFieldFactory(
-                              label: "Pix",
-                              isMandatory: false,
-                              controller: _pixController,
-                            )
+                                label: "Pix (opcional)",
+                                isMandatory: false,
+                                controller: _pixController,
+                                keyboard: TextInputType.number)
                           ],
                         ))),
                 Step(
@@ -127,9 +127,13 @@ class _RequestFormPageState extends State<RequestFormPage> {
   }
 
   TextFormField _formFieldFactory(
-      {required controller, required label, required bool isMandatory}) {
+      {required controller,
+      required label,
+      required bool isMandatory,
+      required TextInputType keyboard}) {
     return TextFormField(
       controller: controller,
+      keyboardType: keyboard,
       decoration: InputDecoration(labelText: label),
       validator: (field) {
         if (isMandatory && field!.trim().isEmpty) {

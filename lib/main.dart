@@ -1,6 +1,6 @@
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:solidarius/pages/request/request_page.dart';
 import 'package:solidarius/shared/models/user_model.dart';
-import 'package:solidarius/pages/quest/request_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:flutter/material.dart';

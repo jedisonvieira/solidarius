@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:solidarius/shared/datas/user_data.dart';
 import 'package:solidarius/shared/widgets/avatar_picker.dart';
+import 'package:solidarius/pages/request/request_page.dart';
+import 'package:solidarius/shared/models/user_model.dart';
+import 'package:solidarius/shared/datas/user_data.dart';
+import 'package:flutter/material.dart';
 
 class UserPage extends StatefulWidget {
   final UserData user;
@@ -22,8 +24,16 @@ class _UserPageState extends State<UserPage> {
   @override
   void initState() {
     super.initState();
-
     setState(() {
+      _editedUser = UserData(
+        id: widget.user.id,
+        age: widget.user.age,
+        name: widget.user.name,
+        phone: widget.user.phone,
+        email: widget.user.email,
+        avatar: widget.user.avatar,
+      );
+
       _ageController.text = _editedUser.age!;
       _nameController.text = _editedUser.name!;
       _phoneController.text = _editedUser.phone!;
@@ -83,27 +93,27 @@ class _UserPageState extends State<UserPage> {
                         }
                       }),
                   _formFieldFactory(
-                      controller: _nameController,
+                      isMandatory: true,
                       label: "Nome completo",
-                      keyboard: TextInputType.name,
-                      isMandatory: true),
+                      controller: _nameController,
+                      keyboard: TextInputType.name),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Flexible(
                           flex: 1,
                           child: _formFieldFactory(
-                              controller: _ageController,
                               label: "Idade",
+                              controller: _ageController,
                               keyboard: TextInputType.number,
                               isMandatory: true)),
                       const VerticalDivider(),
                       Flexible(
                         flex: 2,
                         child: _formFieldFactory(
-                            controller: _phoneController,
                             label: "Telefone",
-                            keyboard: TextInputType.phone,
+                            controller: _phoneController,
+                            keyboard: TextInputType.number,
                             isMandatory: true),
                       ),
                     ],
@@ -117,7 +127,14 @@ class _UserPageState extends State<UserPage> {
                           child: ElevatedButton(
                         child: const Text("Salvar"),
                         onPressed: () {
-                          _saveUser(context);
+                          setState(() {
+                            _editedUser.name = _nameController.text;
+                            _editedUser.age = _ageController.text;
+                            _editedUser.email = _emailController.text;
+                            _editedUser.phone = _phoneController.text;
+                          });
+
+                          _updateUser(context);
                         },
                       ))
                     ],
@@ -129,7 +146,11 @@ class _UserPageState extends State<UserPage> {
     );
   }
 
-  void _saveUser(BuildContext context) {}
+  void _updateUser(BuildContext context) {
+    UserModel().updateUser(UserData().toMap(_editedUser)).then((value) =>
+        Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const RequestPage())));
+  }
 
   TextFormField _formFieldFactory(
       {required controller,
@@ -138,6 +159,7 @@ class _UserPageState extends State<UserPage> {
       required bool isMandatory}) {
     return TextFormField(
       controller: controller,
+      keyboardType: keyboard,
       decoration: InputDecoration(labelText: label),
       validator: (field) {
         if (isMandatory && field!.trim().isEmpty) {

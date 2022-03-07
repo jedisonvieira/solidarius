@@ -1,6 +1,6 @@
+import 'package:solidarius/pages/request/request_page.dart';
 import 'package:solidarius/pages/signup/signup_page.dart';
 import 'package:solidarius/shared/models/user_model.dart';
-import 'package:solidarius/pages/quest/request_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 

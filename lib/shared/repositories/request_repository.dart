@@ -7,19 +7,15 @@ class RequestReposiroty {
       FirebaseFirestore.instance
           .collection("requests")
           .add(requestData)
-          .then((category) {})
-          .catchError((error) {
-        print(error);
-      });
+          .then((request) {})
+          .catchError((error) {});
     } else {
       FirebaseFirestore.instance
           .collection("requests")
           .doc(id)
           .update(requestData)
-          .then((expense) {})
-          .catchError((error) {
-        print(error);
-      });
+          .then((request) {})
+          .catchError((error) {});
     }
   }
 }

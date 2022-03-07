@@ -57,6 +57,7 @@ class UserModel extends Model {
   }
 
   Future<void> updateUser(Map<String, dynamic> userData) async {
+    firebaseUser = _auth.currentUser;
     await FirebaseFirestore.instance
         .collection("users")
         .doc(firebaseUser!.uid)
@@ -76,7 +77,7 @@ class UserModel extends Model {
         .then((loggedUser) async {
       firebaseUser = loggedUser.user;
 
-      loadCurrentUser();
+      await loadCurrentUser();
 
       onSuccess();
       isLoading = false;
@@ -88,10 +89,11 @@ class UserModel extends Model {
     });
   }
 
-  void loadCurrentUser() {
+  Future<void> loadCurrentUser() async {
     if (firebaseUser == null) {
       firebaseUser = _auth.currentUser!;
     } else {
+      userData!["id"] = firebaseUser!.uid;
       if (userData!["name"] == null) {
         FirebaseFirestore.instance
             .collection("users")
