@@ -1,3 +1,4 @@
+import 'package:solidarius/pages/request/widgets/request_form_page.dart';
 import 'package:solidarius/shared/datas/request_data.dart';
 import 'package:solidarius/shared/models/user_model.dart';
 import 'package:flutter/material.dart';
@@ -40,13 +41,13 @@ class _RequestCardState extends State<RequestCard> {
                   ),
           ),
         ),
-        title: Text(widget.request.requester! + " - " + widget.request.city!),
+        title: Text('${widget.request.city!} - ${widget.request.requester!}'),
         subtitle: Text(
           widget.request.description!,
           overflow: TextOverflow.ellipsis,
         ),
         trailing: const Icon(Icons.edit),
-        onTap: () => _openRequestDetails(),
+        onTap: () => _showOptions(context, widget.request),
       ),
     );
   }
@@ -72,5 +73,57 @@ class _RequestCardState extends State<RequestCard> {
         );
       },
     );
+  }
+
+  void _showOptions(BuildContext context, RequestData request) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return BottomSheet(
+              onClosing: () => {},
+              builder: (context) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextButton(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Icon(Icons.edit, color: Colors.yellow[800]),
+                            const Text(
+                              "Editar",
+                              style: TextStyle(fontSize: 20),
+                            )
+                          ],
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => RequestFormPage(
+                                  widget.model,
+                                  requestData: widget.request)));
+                        }),
+                    TextButton(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: const [
+                          Icon(
+                            Icons.delete,
+                            color: Colors.red,
+                          ),
+                          Text(
+                            "Excluir",
+                            style: TextStyle(fontSize: 20),
+                          )
+                        ],
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    )
+                  ],
+                );
+              });
+        });
   }
 }

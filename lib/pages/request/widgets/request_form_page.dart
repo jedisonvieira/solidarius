@@ -7,8 +7,9 @@ import '../request_page.dart';
 
 class RequestFormPage extends StatefulWidget {
   final UserModel model;
+  final RequestData? requestData;
 
-  const RequestFormPage(this.model, {Key? key}) : super(key: key);
+  const RequestFormPage(this.model, {this.requestData});
 
   @override
   _RequestFormPageState createState() => _RequestFormPageState();
@@ -17,7 +18,7 @@ class RequestFormPage extends StatefulWidget {
 class _RequestFormPageState extends State<RequestFormPage> {
   int _currentStep = 0;
   bool _isRequestFormValid = false;
-  RequestData _editedRequest = new RequestData();
+  RequestData _editedRequest = RequestData();
 
   final GlobalKey<FormState> _requestDataFormkey = GlobalKey<FormState>();
   final GlobalKey<FormState> _personalDataFormKey = GlobalKey<FormState>();
@@ -27,6 +28,33 @@ class _RequestFormPageState extends State<RequestFormPage> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _requesterController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _neighborhoodController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.requestData != null) {
+      setState(() {
+        _editedRequest = RequestData(
+            id: widget.requestData!.id,
+            pix: widget.requestData!.pix,
+            city: widget.requestData!.city,
+            address: widget.requestData!.address,
+            creator: widget.requestData!.creator,
+            requester: widget.requestData!.requester,
+            description: widget.requestData!.description,
+            neighborhood: widget.requestData!.neighborhood);
+
+        _pixController.text = _editedRequest.pix!;
+        _cityController.text = _editedRequest.city!;
+        _addressController.text = _editedRequest.address!;
+        _requesterController.text = _editedRequest.requester!;
+        _descriptionController.text = _editedRequest.description!;
+        _neighborhoodController.text = _editedRequest.neighborhood!;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,8 +105,13 @@ class _RequestFormPageState extends State<RequestFormPage> {
                             _formFieldFactory(
                                 label: "Endereço",
                                 isMandatory: true,
-                                keyboard: TextInputType.name,
+                                keyboard: TextInputType.streetAddress,
                                 controller: _addressController),
+                            _formFieldFactory(
+                                label: "Bairro",
+                                isMandatory: true,
+                                controller: _neighborhoodController,
+                                keyboard: TextInputType.streetAddress),
                             _formFieldFactory(
                                 label: "Cidade",
                                 isMandatory: true,
@@ -178,19 +211,26 @@ class _RequestFormPageState extends State<RequestFormPage> {
   }
 
   void _checkButtonPress() {
-    if (_editedRequest.id == null) {
-      _editedRequest.creator = widget.model.firebaseUser!.uid;
-    }
+    setState(() {
+      if (_editedRequest.id == null) {
+        _editedRequest.creator = widget.model.firebaseUser!.uid;
+      } else {
+        _editedRequest.lastEditor = widget.model.firebaseUser!.uid;
+      }
 
-    _editedRequest.pix = _pixController.text;
-    _editedRequest.city = _cityController.text;
-    _editedRequest.status = Constants.idStatusOpen;
-    _editedRequest.address = _addressController.text;
-    _editedRequest.requester = _requesterController.text;
-    _editedRequest.description = _descriptionController.text;
+      _editedRequest.pix = _pixController.text;
+      _editedRequest.city = _cityController.text;
+      _editedRequest.status = Constants.idStatusOpen;
+      _editedRequest.address = _addressController.text;
+      _editedRequest.requester = _requesterController.text;
+      _editedRequest.description = _descriptionController.text;
+      _editedRequest.neighborhood = _neighborhoodController.text;
+    });
 
     RequestReposiroty()
-        .saveRequest(requestData: RequestData().toMap(_editedRequest))
+        .saveRequest(
+            id: _editedRequest.id,
+            requestData: RequestData().toMap(_editedRequest))
         .then((value) => Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => const RequestPage())));
   }

@@ -29,8 +29,18 @@ class _RequestPageState extends State<RequestPage> {
                     color: Theme.of(context).primaryColor,
                   ),
                   backgroundColor: Theme.of(context).backgroundColor,
-                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => RequestFormPage(model))),
+                  onPressed: () {
+                    if (model.isUserLogged()) {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => RequestFormPage(model)));
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          duration: Duration(seconds: 3),
+                          backgroundColor: Colors.redAccent,
+                          content: Text(
+                              "Entre na sua conta para cadastrar um pedido de auxílio.")));
+                    }
+                  },
                 ),
                 drawer: NavBar(model),
                 drawerScrimColor: const Color.fromRGBO(0, 0, 0, 0.7),
