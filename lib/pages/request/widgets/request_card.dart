@@ -2,6 +2,7 @@ import 'package:solidarius/pages/request/widgets/request_form_page.dart';
 import 'package:solidarius/shared/datas/request_data.dart';
 import 'package:solidarius/shared/models/user_model.dart';
 import 'package:flutter/material.dart';
+import 'package:solidarius/shared/repositories/request_repository.dart';
 
 // ignore: must_be_immutable
 class RequestCard extends StatefulWidget {
@@ -119,6 +120,23 @@ class _RequestCardState extends State<RequestCard> {
                       ),
                       onPressed: () {
                         Navigator.pop(context);
+                        RequestReposiroty().deleteRequest(
+                            id: widget.request.id!,
+                            onSuccess: () => {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          duration: Duration(seconds: 3),
+                                          backgroundColor: Colors.redAccent,
+                                          content: Text(
+                                              "Pedido de auxílio excluído.")))
+                                },
+                            onFail: (error) => {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          duration: const Duration(seconds: 3),
+                                          backgroundColor: Colors.red,
+                                          content: Text("$error")))
+                                });
                       },
                     )
                   ],
