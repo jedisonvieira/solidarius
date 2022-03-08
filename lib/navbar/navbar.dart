@@ -27,22 +27,22 @@ class _NavBarState extends State<NavBar> {
             Builder(builder: (context) {
               return UserAccountsDrawerHeader(
                 accountName: Text(
-                  widget.model.userData!["name"] ?? "",
+                  model.userData!["name"] ?? "",
                   style: const TextStyle(
                       color: Colors.black, fontWeight: FontWeight.bold),
                 ),
                 accountEmail: Text(
-                  widget.model.userData!["email"] ?? "",
+                  model.userData!["email"] ?? "",
                   style: const TextStyle(color: Colors.black),
                 ),
                 currentAccountPictureSize: const Size.fromRadius(40),
-                currentAccountPicture: widget.model.userData!["avatar"] != null
+                currentAccountPicture: model.userData!["avatar"] != null
                     ? CircleAvatar(
                         backgroundColor: Theme.of(context).backgroundColor,
                         child: ClipOval(
                           child: Image(
                             fit: BoxFit.fitHeight,
-                            image: AssetImage(widget.model.userData!["avatar"]),
+                            image: AssetImage(model.userData!["avatar"]),
                           ),
                         ),
                       )

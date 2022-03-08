@@ -17,7 +17,7 @@ class UserModel extends Model {
           .collection("users")
           .doc(firebaseUser!.uid)
           .get()
-          .then((user) => {userData = user.data()});
+          .then((user) => userData = user.data());
     }
     return _auth.currentUser != null;
   }
@@ -99,7 +99,7 @@ class UserModel extends Model {
             .collection("users")
             .doc(firebaseUser!.uid)
             .get()
-            .then((user) => {userData = user.data()});
+            .then((user) => userData = user.data());
       }
     }
 
@@ -107,8 +107,9 @@ class UserModel extends Model {
   }
 
   Future<void> logOut() async {
-    await _auth.signOut();
+    userData = {};
     firebaseUser = null;
+    await _auth.signOut();
     notifyListeners();
   }
 
