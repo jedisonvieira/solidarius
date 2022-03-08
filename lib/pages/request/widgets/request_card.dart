@@ -3,6 +3,7 @@ import 'package:solidarius/shared/datas/request_data.dart';
 import 'package:solidarius/shared/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:solidarius/shared/repositories/request_repository.dart';
+import 'package:solidarius/shared/util/constants.dart';
 
 // ignore: must_be_immutable
 class RequestCard extends StatefulWidget {
@@ -47,32 +48,16 @@ class _RequestCardState extends State<RequestCard> {
           widget.request.description!,
           overflow: TextOverflow.ellipsis,
         ),
-        trailing: const Icon(Icons.edit),
-        onTap: () => _showOptions(context, widget.request),
+        trailing: Icon(
+          Icons.warning,
+          color: Constants.yellow,
+        ),
+        onTap: () {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) =>
+                  RequestFormPage(widget.model, requestData: widget.request)));
+        },
       ),
-    );
-  }
-
-  void _openRequestDetails() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Center(
-            child: Text(
-              'Detalhes do auxilio',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-          content: GestureDetector(
-            child: const SizedBox(
-              height: 250,
-              width: 250,
-            ),
-            onTap: () => Navigator.pop(context),
-          ),
-        );
-      },
     );
   }
 
