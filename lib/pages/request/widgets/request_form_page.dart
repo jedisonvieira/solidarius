@@ -349,6 +349,8 @@ class _RequestFormPageState extends State<RequestFormPage> {
   }
 
   Future<void> _attachFile() async {
+    if (widget.model.isUserLogged()) return;
+
     final result = await FilePicker.platform.pickFiles(allowMultiple: false);
 
     if (result == null) return;
