@@ -378,7 +378,7 @@ class _RequestFormPageState extends State<RequestFormPage> {
   }
 
   Future<void> _showAttachmentDialog(String attachmentURL) async {
-    if (ref == null) return;
+    if (ref == null || !widget.model.isUserLogged()) return;
 
     await ref!.getData().then((bytes) => {
           showDialog(
