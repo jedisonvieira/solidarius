@@ -378,6 +378,8 @@ class _RequestFormPageState extends State<RequestFormPage> {
   }
 
   Future<void> _showAttachmentDialog(String attachmentURL) async {
+    if (ref == null) return;
+
     await ref!.getData().then((bytes) => {
           showDialog(
             context: context,
