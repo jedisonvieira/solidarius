@@ -74,7 +74,7 @@ class _RequestFormPageState extends State<RequestFormPage> {
           backgroundColor: Theme.of(context).backgroundColor,
         ),
         floatingActionButton: Visibility(
-          visible: _isRequestFormValid,
+          visible: _isRequestFormValid && widget.model.isUserLogged(),
           child: FloatingActionButton(
             onPressed: _checkButtonPress,
             child: Icon(
@@ -163,26 +163,29 @@ class _RequestFormPageState extends State<RequestFormPage> {
                     onStepContinue: () => _continued(),
                     onStepCancel: () => _cancelled()),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(25, 10, 25, 10),
-                child: TextButton(
-                    style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(Constants.red)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Icon(
-                          Icons.delete,
-                          color: Colors.white,
-                        ),
-                        Text(
-                          "Excluir pedido",
-                          style: TextStyle(color: Colors.white),
-                        )
-                      ],
-                    ),
-                    onPressed: () => _deleteRequest(context)),
+              Visibility(
+                visible: widget.model.isUserLogged(),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(25, 10, 25, 10),
+                  child: TextButton(
+                      style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(Constants.red)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Icon(
+                            Icons.delete,
+                            color: Colors.white,
+                          ),
+                          Text(
+                            "Excluir pedido",
+                            style: TextStyle(color: Colors.white),
+                          )
+                        ],
+                      ),
+                      onPressed: () => _deleteRequest(context)),
+                ),
               )
             ],
           ),
@@ -272,7 +275,9 @@ class _RequestFormPageState extends State<RequestFormPage> {
         _currentStep -= 1;
       });
     } else {
-      _deleteRequest(context);
+      if (widget.model.isUserLogged()) {
+        _deleteRequest(context);
+      }
     }
   }
 

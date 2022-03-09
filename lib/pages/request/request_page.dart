@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:solidarius/navbar/navbar.dart';
 import 'package:flutter/material.dart';
+import 'package:solidarius/shared/util/methods.dart';
 
 class RequestPage extends StatefulWidget {
   const RequestPage({Key? key}) : super(key: key);
@@ -23,24 +24,19 @@ class _RequestPageState extends State<RequestPage> {
           builder: (BuildContext context, child, model) {
             model.isUserLogged();
             return Scaffold(
-                floatingActionButton: FloatingActionButton(
-                  child: Icon(
-                    Icons.add,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  backgroundColor: Theme.of(context).backgroundColor,
-                  onPressed: () {
-                    if (model.isUserLogged()) {
+                floatingActionButton: Visibility(
+                  visible: model.isUserLogged(),
+                  child: FloatingActionButton(
+                    child: Icon(
+                      Icons.add,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    backgroundColor: Theme.of(context).backgroundColor,
+                    onPressed: () {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => RequestFormPage(model)));
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                          duration: Duration(seconds: 3),
-                          backgroundColor: Colors.redAccent,
-                          content: Text(
-                              "Entre na sua conta para cadastrar um pedido de auxílio.")));
-                    }
-                  },
+                    },
+                  ),
                 ),
                 drawer: NavBar(model),
                 drawerScrimColor: const Color.fromRGBO(0, 0, 0, 0.7),

@@ -67,4 +67,11 @@ class Methods {
 
     return Future.value(_returnValue);
   }
+
+  void scaffoldErrorMessage(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        duration: const Duration(seconds: 3),
+        backgroundColor: Colors.redAccent,
+        content: Text(message)));
+  }
 }
