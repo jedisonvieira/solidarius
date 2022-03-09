@@ -42,14 +42,8 @@ class _RequestCardState extends State<RequestCard> {
           ),
         ),
         title: Text('${widget.request.city!} - ${widget.request.requester!}'),
-        subtitle: Text(
-          widget.request.description!,
-          overflow: TextOverflow.ellipsis,
-        ),
-        trailing: Icon(
-          Icons.warning,
-          color: Constants.yellow,
-        ),
+        subtitle: Text(widget.request.description!),
+        trailing: Icon(Icons.warning, color: Constants.yellow),
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) =>

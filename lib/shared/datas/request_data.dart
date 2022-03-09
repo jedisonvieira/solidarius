@@ -11,6 +11,7 @@ class RequestData {
   late String? lastEditor;
   late String? description;
   late String? neighborhood;
+  late String attachmentURL;
 
   RequestData(
       {id,
@@ -22,7 +23,8 @@ class RequestData {
       this.requester,
       this.lastEditor,
       this.description,
-      this.neighborhood}) {
+      this.neighborhood,
+      this.attachmentURL = ""}) {
     if (id != null) {
       this.id = id;
     }
@@ -39,6 +41,7 @@ class RequestData {
     lastEditor = snapshot["lastEditor"];
     description = snapshot["description"];
     neighborhood = snapshot["neighborhood"];
+    attachmentURL = snapshot["attachmentURL"];
   }
 
   Map<String, dynamic> toMap(RequestData request) {
@@ -51,7 +54,8 @@ class RequestData {
       "requester": request.requester,
       "lastEditor": request.lastEditor,
       "description": request.description,
-      "neighborhood": request.neighborhood
+      "neighborhood": request.neighborhood,
+      "attachmentURL": request.attachmentURL
     };
   }
 }

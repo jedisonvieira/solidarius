@@ -1,9 +1,16 @@
+import 'dart:io';
+import 'dart:ui';
+
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:solidarius/api/firebaseApi.dart';
 import 'package:solidarius/shared/repositories/request_repository.dart';
 import 'package:solidarius/shared/datas/request_data.dart';
 import 'package:solidarius/shared/models/user_model.dart';
 import 'package:solidarius/shared/util/constants.dart';
-import 'package:flutter/material.dart';
 import 'package:solidarius/shared/util/methods.dart';
+import 'package:flutter/material.dart';
+import 'package:path/path.dart' as path;
 import '../request_page.dart';
 
 class RequestFormPage extends StatefulWidget {
@@ -17,10 +24,13 @@ class RequestFormPage extends StatefulWidget {
 }
 
 class _RequestFormPageState extends State<RequestFormPage> {
+  File? file;
+  Reference? ref;
   int _currentStep = 0;
   bool _isEdited = false;
   bool _isRequestFormValid = false;
   RequestData _editedRequest = RequestData();
+  String fileName = "Nenhum arquivo anexado.";
 
   final GlobalKey<FormState> _requestDataFormkey = GlobalKey<FormState>();
   final GlobalKey<FormState> _personalDataFormKey = GlobalKey<FormState>();
@@ -42,11 +52,19 @@ class _RequestFormPageState extends State<RequestFormPage> {
             id: widget.requestData!.id,
             pix: widget.requestData!.pix,
             city: widget.requestData!.city,
+            status: widget.requestData!.status,
             address: widget.requestData!.address,
             creator: widget.requestData!.creator,
             requester: widget.requestData!.requester,
             description: widget.requestData!.description,
-            neighborhood: widget.requestData!.neighborhood);
+            neighborhood: widget.requestData!.neighborhood,
+            attachmentURL: widget.requestData!.attachmentURL);
+
+        if (widget.requestData!.attachmentURL.isNotEmpty) {
+          ref = FirebaseStorage.instance
+              .refFromURL(widget.requestData!.attachmentURL);
+          fileName = ref!.name;
+        }
 
         _pixController.text = _editedRequest.pix!;
         _cityController.text = _editedRequest.city!;
@@ -60,6 +78,8 @@ class _RequestFormPageState extends State<RequestFormPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (file != null) fileName = path.basename(file!.path);
+
     return WillPopScope(
       onWillPop: () {
         return Methods().editionPop(context, _isEdited);
@@ -72,6 +92,25 @@ class _RequestFormPageState extends State<RequestFormPage> {
             style: TextStyle(color: Theme.of(context).primaryColor),
           ),
           backgroundColor: Theme.of(context).backgroundColor,
+          actions: [
+            Visibility(
+              visible: _editedRequest.status != null,
+              child: IconButton(
+                  tooltip: "Anexar comprovante ou arquivo",
+                  icon: const Icon(Icons.attach_file),
+                  onPressed: () => _attachFile()),
+            ),
+            Visibility(
+              visible:
+                  widget.model.isUserLogged() && _editedRequest.status != null,
+              child: IconButton(
+                  icon: Icon(
+                    Icons.delete_forever,
+                    color: Constants.red,
+                  ),
+                  onPressed: () => _deleteRequest(context)),
+            ),
+          ],
         ),
         floatingActionButton: Visibility(
           visible: _isRequestFormValid && widget.model.isUserLogged(),
@@ -143,19 +182,20 @@ class _RequestFormPageState extends State<RequestFormPage> {
                             child: Column(
                               children: [
                                 TextFormField(
+                                  maxLines: 5,
+                                  autocorrect: true,
                                   onChanged: _validateRequestForm,
-                                  maxLines: 10,
                                   controller: _descriptionController,
                                   keyboardType: TextInputType.multiline,
                                   decoration: const InputDecoration(
-                                      labelText: "Descrição completa",
-                                      border: OutlineInputBorder()),
+                                    labelText: "Descrição completa",
+                                  ),
                                   validator: (description) {
                                     if (description!.trim().isEmpty) {
                                       return "Campo obrigatório";
                                     }
                                   },
-                                ),
+                                )
                               ],
                             ),
                           ))
@@ -164,27 +204,25 @@ class _RequestFormPageState extends State<RequestFormPage> {
                     onStepCancel: () => _cancelled()),
               ),
               Visibility(
-                visible: widget.model.isUserLogged(),
+                visible: _editedRequest.status != null,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(25, 10, 25, 10),
+                  padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
                   child: TextButton(
-                      style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Constants.red)),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(
-                            Icons.delete,
-                            color: Colors.white,
-                          ),
-                          Text(
-                            "Excluir pedido",
-                            style: TextStyle(color: Colors.white),
-                          )
-                        ],
-                      ),
-                      onPressed: () => _deleteRequest(context)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const Icon(Icons.attach_file),
+                        Text(
+                          fileName,
+                          style: const TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
+                    onPressed: () {
+                      _showAttachmentDialog(_editedRequest.attachmentURL);
+                    },
+                  ),
                 ),
               )
             ],
@@ -275,7 +313,9 @@ class _RequestFormPageState extends State<RequestFormPage> {
         _currentStep -= 1;
       });
     } else {
-      if (widget.model.isUserLogged()) {
+      if (_editedRequest.status == null) {
+        Methods().editionPop(context, _isEdited);
+      } else if (widget.model.isUserLogged()) {
         _deleteRequest(context);
       }
     }
@@ -298,11 +338,59 @@ class _RequestFormPageState extends State<RequestFormPage> {
       _editedRequest.neighborhood = _neighborhoodController.text;
     });
 
-    RequestReposiroty()
-        .saveRequest(
-            id: _editedRequest.id,
-            requestData: RequestData().toMap(_editedRequest))
-        .then((value) => Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const RequestPage())));
+    _uploadFile().then((value) {
+      RequestReposiroty()
+          .saveRequest(
+              id: _editedRequest.id,
+              requestData: RequestData().toMap(_editedRequest))
+          .then((value) => Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const RequestPage())));
+    });
+  }
+
+  Future<void> _attachFile() async {
+    final result = await FilePicker.platform.pickFiles(allowMultiple: false);
+
+    if (result == null) return;
+
+    final path = result.files.single.path;
+    setState(() {
+      file = File(path!);
+    });
+  }
+
+  Future<void> _uploadFile() async {
+    if (file == null) return;
+
+    final fileName = path.basename(file!.path);
+    final destination = 'files/$fileName';
+
+    UploadTask? task = FirebaseApi.uploadFile(destination, file!);
+
+    if (task == null) return;
+
+    final snapshot = await task.whenComplete(() => {});
+    final urlDownload = await snapshot.ref.getDownloadURL();
+
+    setState(() {
+      _editedRequest.attachmentURL = urlDownload;
+    });
+  }
+
+  Future<void> _showAttachmentDialog(String attachmentURL) async {
+    await ref!.getData().then((bytes) => {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text(
+                  'Anexo do pedido de auxílio',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                content: SizedBox(child: Image.memory(bytes!)),
+              );
+            },
+          )
+        });
   }
 }
